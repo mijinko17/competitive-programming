@@ -1,12 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-int secondelement(int a,int b, int c){
-	vector<int> temp={a,b,c};
-	sort(temp.begin(),temp.end());
-	return temp[1];
-}
-
 int main(){
 	int n;
 	cin>>n;
@@ -18,20 +12,52 @@ int main(){
 			cin>>vo[i/2];
 		}
 	}
-	//veの最頻値、第二最頻値を調べる
-	int mi,si;
-	int mv,sv;
+	//出現頻度の測定
 	unordered_map<int,int> ume,umo;
 	for (int i = 0; i < n/2; i++) {
 		ume[ve[i]]++;
 		umo[vo[i]]++;
 	}
-	unordered_map<int,int>::iterator itr1,itr2;
-	if ((*ume.begin()).second>=(*next(ume.begin())).second) {
-		itr1=ume.begin();
-		itr2=next(ume.begin());
+	//最頻値の計算
+	unordered_map<int,int>::iterator eitr1,eitr2;
+	int em=0,es=0;
+	for (auto itr = ume.begin(); itr !=ume.end(); itr++) {
+		if ((*itr).second>=em) {
+			eitr1=itr;
+			em=(*itr).second;
+		}
 	}
 	for (auto itr = ume.begin(); itr !=ume.end(); itr++) {
-		//cout<<(*itr).second<<endl;
+		if (itr==eitr1) {
+			continue;
+		}
+		if ((*itr).second>=es) {
+			eitr2=itr;
+			es=(*itr).second;
+		}
 	}
+	unordered_map<int,int>::iterator oitr1,oitr2;
+	int om=0,os=0;
+	for (auto itr = umo.begin(); itr !=umo.end(); itr++) {
+		if ((*itr).second>=om) {
+			oitr1=itr;
+			om=(*itr).second;
+		}
+	}
+	for (auto itr = umo.begin(); itr !=umo.end(); itr++) {
+		if (itr==oitr1) {
+			continue;
+		}
+		if ((*itr).second>=os) {
+			oitr2=itr;
+			os=(*itr).second;
+		}
+	}
+	int ans;
+	if ((*eitr1).first!=(*oitr1).first) {
+		ans=n-em-om;
+	}else {
+		ans=min(n-em-os,n-om-es);
+	}
+	cout<<ans<<endl;
 }
