@@ -20,14 +20,43 @@ int main(){
 	}
 	int task;
 	int x,y;
+	int ans=0;
 	while (q.size()>0) {
 		task=q.size();
 		for (int i = 0; i < task; i++) {
 			x=q.front().first;
 			y=q.front().second;
-			if () {
-				
+			//left
+			if (x-1>=0) {
+				if (a[x-1][y]==0) {
+					a[x-1][y]=1;
+					q.push(make_pair(x-1,y));
+				}
 			}
+			//right
+			if (x+1<h) {
+				if (a[x+1][y]==0) {
+					a[x+1][y]=1;
+					q.push(make_pair(x+1,y));
+				}
+			}
+			//up
+			if (y-1>=0) {
+				if (a[x][y-1]==0) {
+					a[x][y-1]=1;
+					q.push(make_pair(x,y-1));
+				}
+			}
+			//down
+			if (y+1<w) {
+				if (a[x][y+1]==0) {
+					a[x][y+1]=1;
+					q.push(make_pair(x,y+1));
+				}
+			}
+			q.pop();
 		}
+		ans++;
 	}
+	cout<<ans-1<<endl;
 }

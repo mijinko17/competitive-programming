@@ -1,43 +1,56 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-string is3(int n){
-	vector<string> v={"A","C","G","T"};
-	return v[(n%64)/16]+v[(n%16)/4]+v[n%4];
-}
-string is4(int n){
-	vector<string> v={"A","C","G","T"};
-	return v[n/64]+v[(n%64)/16]+v[(n%16)/4]+v[n%4];
-}
-int si(string s){
-	unordered_map<char,int> m;
-	m['A']=0;
-	m['C']=1;
-	m['G']=2;
-	m['T']=3;
-	return m[s[0]]+4*m[s[1]]+16*m[s[2]];
-}
-bool agc3(string s){
-	//return s!="AGC"&&s!="ACG"&&s!="GAC";
-	return s=="AGC"||s=="ACG"||s=="GAC";
-}
-bool agc4(string s){
-	string s1,s2;
-	s1=s.substr(0,3);
-	s1[2]=s[3];
-	s2=s.substr(1,3);
-	s2[0]=s[0];
-	return agc3(s.substr(0,3))||agc3(s.substr(1,3))||agc3(s1)||agc3(s2);
+// s[i]とs[i+1]を入れ替えた文字列を出力
+string trans(string s, int i) {
+    swap(s[i], s[i + 1]);
+    return s;
 }
 
-int main(){
-	int ans=0;
-	for (int i = 0; i < 256; i++) {
-		if (!agc4(is4(i))) {
-			ans++;
-		}else {
-			cout<<is4(i)<<endl;
-		}
-	}
-	cout<<ans<<endl;
+//長さ3の文字列が"AGC"か判定
+bool notAGC(string s) {
+    string a = "agc";
+    if (s == a || trans(s, 0) == a || trans(s, 1) == a) return false;
+    return true;
+}
+
+int main() {
+    int n;
+    cin >> n;
+    long long int p = 1e+9 + 7;
+    // dp[i][s]:長さiのnotAGCで右3つがsなるものの数
+    vector<unordered_map<string, long long int>> dp(n + 1);
+    vector<string> c = {"a", "c", "g", "t"};
+    // dp[3]を完成させる
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            for (int k = 0; k < 4; k++) {
+                string temp = c[i] + c[j] + c[k];
+                if (notAGC(temp)) {
+                    dp[3][temp]++;
+                }
+            }
+        }
+    }
+    // dp[i(>3)]を完成させる
+    for (int i = 3; i < n; i++) {
+        for (auto itr = dp[i].begin(); itr != dp[i].end(); itr++) {
+            for (int j = 0; j < 4; j++) {
+                string temp1 = (*itr).first.substr(1) + c[j];
+                string temp2 = (*itr).first.substr(0, 2) + c[j];
+                string temp3 = trans((*itr).first, 0).substr(1) + c[j];
+                if (notAGC(temp1) && temp2 != "agc" && temp3 != "agc") {
+                    dp[i + 1][temp1] += (*itr).second;
+                    dp[i + 1][temp1] %= p;
+                }
+            }
+        }
+    }
+    long long int ans = 0;
+    for (auto itr = dp[n].begin(); itr != dp[n].end(); itr++) {
+        ans += (*itr).second;
+        ans %= p;
+    }
+    cout << ans << endl;
+    return 0;
 }
