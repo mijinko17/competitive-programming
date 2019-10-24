@@ -1,36 +1,22 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-int main(){
-	int n;
-	string s;
-	cin>>n>>s;
-	list<pair<int,int>> cand;
-	for (int i = 0; i < n-1; i++) {
-		for (int j = i+1; j < n; j++) {
-			if (s[i]==s[j]) {
-				cand.push_back(make_pair(i,j));
-			}
-		}
-	}
-	int len=0;
-	int first,second;
-	if (cand.size()==0) {
-		cout<<0<<endl;
-	}else {
-		while (cand.size()>0) {
-			len++;
-			for (auto itr = cand.begin(); itr !=cand.end(); itr++) {
-				first=(*itr).first;
-				second=(*itr).second;
-
-				if (second>=n-len) {
-					cand.erase(itr);
-				}else if (s[first+len]!=s[second+len]) {
-					cand.erase(itr);
-				}
-			}
-		}
-		cout<<len<<endl;
-	}
+int main() {
+    int n;
+    string s;
+    cin >> n >> s;
+    int ans = 0;
+    // dp[i][j]:末端がi-1,j-1なる連続部分文字列で最長のやつの長さ
+    vector<vector<int>> dp(n + 1, vector<int>(n + 1, 0));
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= n; j++) {
+            if (s[i - 1] == s[j - 1]) {
+                dp[i][j] = min(dp[i - 1][j - 1] + 1, abs(i - j));
+                ans = max(ans, dp[i][j]);
+            } else {
+                dp[i][j] = 0;
+            }
+        }
+    }
+    cout << ans << endl;
 }

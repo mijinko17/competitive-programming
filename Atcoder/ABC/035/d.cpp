@@ -14,9 +14,10 @@ struct edge {
 
 // dijkstra
 // depend:edge
-vector<long long int> dijkstra(vector<vector<edge>>& g, int start) {
+vector<long long int> dijkstra(vector<vector<edge>> g, int start) {
     using lint = long long int;
-    vector<lint> res(g.size(), LLONG_MAX);
+    int n = g.size();
+    vector<lint> res(n, LLONG_MAX);
     res[start] = 0;
     // first:距離、second:行き先
     priority_queue<pair<lint, lint>, vector<pair<lint, lint>>,
@@ -39,32 +40,4 @@ vector<long long int> dijkstra(vector<vector<edge>>& g, int start) {
 }
 
 int main() {
-    int n, m;
-    cin >> n >> m;
-    vector<int> a(m);
-    // key[i]の第j-bitが1==i番目の鍵はj番目の宝箱を開けられる
-    vector<int> key(m, 0);
-    for (int i = 0; i < m; i++) {
-        int b;
-        cin >> a[i] >> b;
-        //キーの作成
-        for (int j = 0; j < b; j++) {
-            int c;
-            cin >> c;
-            key[i] += 1 << (c - 1);
-        }
-    }
-    //グラフの作成
-    vector<vector<edge>> g((1 << n));
-    for (int i = 0; i < (1 << n); i++) {
-        for (int j = 0; j < m; j++) {
-            g[i].push_back(edge(i | key[j], a[j]));
-        }
-    }
-    vector<lint> cost = dijkstra(g, 0);
-    if (cost[(1 << n) - 1] == LLONG_MAX) {
-        cout << -1 << endl;
-    } else {
-        cout << cost[(1 << n) - 1] << endl;
-    }
 }
