@@ -75,12 +75,4 @@ ostream& operator<<(ostream& os, const int_p<p>& x) {
 };
 
 int main() {
-    int n;
-    cin >> n;
-    const long long int MOD = 1e+9 + 7;
-    int_p<MOD> ans = 1;
-    for (int i = 1; i <= n; i++) {
-        ans *= i;
-    }
-    cout << ans << endl;
 }

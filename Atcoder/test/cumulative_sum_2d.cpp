@@ -3,40 +3,48 @@
 typedef long long int lint;
 using namespace std;
 
+// ABC-106-D
+
 //二次元累積和
 struct cumulative_sum_2d {
-    vector<vector<long long int>> data;
-    //コンストラクタ
-    template <typename T>
-    cumulative_sum_2d(vector<vector<T>> &v) {
-        data = vector<vector<long long int>>(
-            v.size() + 1, vector<long long int>(v[0].size() + 1, 0));
-        for (int i = 0; i < (int)v.size(); i++) {
-            for (int j = 0; j < (int)v[0].size(); j++) {
-                data[i + 1][j + 1] =
-                    data[i + 1][j] + data[i][j + 1] - data[i][j] + v[i][j];
-            }
-        }
+    using lint = long long int;
+    int sz;
+    vector<vector<lint>> data;
+    vector<vector<lint>> sum;
+    cumulative_sum_2d(const int _sz) : sz(_sz) {
+        data.assign(sz, vector<lint>(sz));
+        sum.assign(sz + 1, vector<lint>(sz + 1));
+    }
+    vector<lint>& operator[](const int k) {
+        return data[k];
+    }
+    void build() {
+        for (int i = 0; i < sz; i++)
+            for (int j = 0; j < sz; j++)
+                sum[i + 1][j + 1] =
+                    sum[i + 1][j] + sum[i][j + 1] - sum[i][j] + data[i][j];
     }
     //[a,b)×[c,d)の和を計算
-    long long int sum(int a, int b, int c, int d) {
-        return data[b][d] - data[b][c] - data[a][d] + data[a][c];
+    lint query(const int a, const int b, const int c, const int d) const {
+        return sum[b][d] - sum[b][c] - sum[a][d] + sum[a][c];
     }
 };
 
 int main() {
     int n, m, q;
     cin >> n >> m >> q;
-    vector<vector<int>> train(n, vector<int>(n, 0));
+    cumulative_sum_2d cum(n);
     for (int i = 0; i < m; i++) {
         int l, r;
         cin >> l >> r;
-        train[l - 1][r - 1]++;
+        l--, r--;
+        cum[l][r]++;
     }
-    cumulative_sum_2d cum(train);
+    cum.build();
     for (int i = 0; i < q; i++) {
         int x, y;
         cin >> x >> y;
-        cout << cum.sum(x - 1, y, x - 1, y) << endl;
+        x--, y--;
+        cout << cum.query(x, y + 1, x, y + 1) << endl;
     }
 }

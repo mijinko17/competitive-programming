@@ -3,31 +3,46 @@
 typedef long long int lint;
 using namespace std;
 
-//累積和
+// 累積和
 struct cumulative_sum {
-    // data[i]:[0,i)の和
-    vector<long long int> data;
-    //コンストラクタ O(n)
-    template <typename T>
-    cumulative_sum(vector<T>& v) {
-        data.assign(v.size() + 1, 0);
-        for (int i = 0; i < (int)v.size(); i++) {
-            data[i + 1] = data[i] + v[i];
-        }
+    using lint = long long int;
+    int sz;
+    // data[i]:元の数列
+    vector<lint> data;
+    // cum[i]:[0,i)の和
+    vector<lint> sum;
+    // 要素数を指定して初期化
+    cumulative_sum(const int _sz) : sz(_sz) {
+        data.assign(sz, 0);
+        sum.assign(sz + 1, 0);
     }
-    //[a,b)の和を求める
-    const long long int sum(long long int a, long long int b) {
-        return data[b] - data[a];
+    lint& operator[](const int k) {
+        return data[k];
+    }
+    // dataに基づいてsumを構築
+    void build() {
+        for (int i = 0; i < sz; i++) sum[i + 1] = sum[i] + data[i];
+    }
+    // [a,b)の和を求める
+    lint query(const int a, const int b) {
+        return sum[b] - sum[a];
     }
 };
 
 int main() {
-    int h, w, d;
-    cin >> h >> w >> d;
-    int a;
-    for (int i = 0; i < h; i++) {
-        for (int j = 0; j < w; j++) {
-            cin >> a;
-        }
+    int n, t;
+    cin >> n >> t;
+    t++;
+    cumulative_sum cum(t);
+    for (int i = 0; i < n; i++) {
+        int l, r;
+        cin >> l >> r;
+        cum[l]++, cum[r]--;
     }
+    cum.build();
+    int ans = 0;
+    for (int i = 0; i < t + 1; i++) {
+        ans = max((lint)ans, cum.query(0, i));
+    }
+    cout << ans << endl;
 }

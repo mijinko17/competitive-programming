@@ -13,40 +13,42 @@ struct edge {
     }
 };
 
+// path[start]を計算して格納する
+void dfs(int start, vector<vector<edge>> &g, vector<int> &path,
+         vector<bool> &calced) {
+    if (calced[start]) {
+        return;
+    }
+    if (g[start].size() == 0) {
+        path[start] = 0;
+    } else {
+        int temp = 0;
+        for (int i = 0; i < g[start].size(); i++) {
+            dfs(g[start][i].to, g, path, calced);
+            temp = max(temp, path[g[start][i].to]);
+        }
+        path[start] = temp + 1;
+    }
+    calced[start] = true;
+}
+
 int main() {
     int n, m;
     cin >> n >> m;
     vector<vector<edge>> g(n);
-    //湧き出しかどうか
-    vector<bool> spring(n, true);
     for (int i = 0; i < m; i++) {
         int x, y;
         cin >> x >> y;
         x--, y--;
         g[x].push_back(edge(y));
-        spring[y] = false;
     }
-    // 湧き出しからbfsぽくいきたい
-    // first:vertex,second:length
-    queue<pair<int, int>> q;
-    for (int i = 0; i < n; i++) {
-        if (spring[i]) {
-            q.push({i, 0});
-        }
-    }
+    // path[i]:iスタートのパスで最長なものの長さ
+    vector<int> path(n);
+    vector<bool> calced(n, false);
     int ans = 0;
-    // path[i]:頂点iが終点の有向パスで最長なものの長さ
-    vector<int> path(n, 0);
-    while (q.size() > 0) {
-        int v = q.front().first, l = q.front().second;
-        q.pop();
-        if (path[v] > l) continue;
-        for (int i = 0; i < g[v].size(); i++) {
-            if (path[g[v][i].to] >= path[v] + 1) continue;
-            path[g[v][i].to] = path[v] + 1;
-            ans = max(ans, path[v] + 1);
-            q.push({g[v][i].to, path[v] + 1});
-        }
+    for (int i = 0; i < n; i++) {
+        dfs(i, g, path, calced);
+        ans = max(ans, path[i]);
     }
     cout << ans << endl;
 }
