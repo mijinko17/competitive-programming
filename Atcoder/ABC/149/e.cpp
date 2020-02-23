@@ -2,22 +2,6 @@
 typedef long long lint;
 using namespace std;
 
-lint n, m;
-vector<lint> a;
-
-//幸福度k以上の握手が何個あるか
-lint count(lint k) {
-    lint res = 0;
-    for (int i = 0; i < n; i++) {
-        res += a.end() - lower_bound(a.begin(), a.end(), k - a[i]);
-    }
-    return res;
-}
-
-bool check(lint k) {
-    return count(k) < m;
-}
-
 // 累積和
 struct cumulative_sum {
     using lint = long long int;
@@ -44,6 +28,32 @@ struct cumulative_sum {
     }
 };
 
+lint n, m;
+vector<lint> a;
+
+//幸福度k以上の握手が何個あるか
+lint count(lint k) {
+    lint res = 0;
+    for (int i = 0; i < n; i++) {
+        res += a.end() - lower_bound(a.begin(), a.end(), k - a[i]);
+    }
+    return res;
+}
+
+bool check(lint k) {
+    return count(k) < m;
+}
+
+// めぐる式二分探索
+long long meguru_BinarySearch(long long ok, long long no,
+                              function<bool(long long)> isValid) {
+    while (abs(ok - no) > 1) {
+        long long mid = (ok >> 1) + (no >> 1) + (1 & ok & no);
+        (isValid(mid) ? ok : no) = mid;
+    }
+    return ok;
+}
+
 int main() {
     cin >> n >> m;
     a.resize(n);
@@ -51,15 +61,7 @@ int main() {
         cin >> a[i];
     }
     sort(a.begin(), a.end());
-    lint ok = 1e+6, no = 0;
-    while (abs(ok - no) > 1) {
-        lint mid = (ok + no) / 2;
-        if (check(mid)) {
-            ok = mid;
-        } else {
-            no = mid;
-        }
-    }
+    lint ok = meguru_BinarySearch(1e+6, 0, check);
     lint ans = 0;
     ans += (ok - 1) * (m - count(ok));
     cumulative_sum cum(n);

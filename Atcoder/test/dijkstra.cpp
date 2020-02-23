@@ -8,34 +8,30 @@ struct edge {
     using lint = long long int;
     int to;
     lint cost;
-    edge(lint t, lint c) : to(t), cost(c) {
-    }
+    edge(lint t, lint c) : to(t), cost(c) {}
 };
+
 // dijkstra
-vector<long long int> dijkstra(vector<vector<edge>> g, int start) {
-    using lint = long long int;
-    int n = g.size();
-    vector<lint> res(n, LLONG_MAX);
+// depend:edge
+vector<long long> dijkstra(vector<vector<edge>> g, int start) {
+    using P = pair<long long, long long>;
+    vector<long long> res(g.size(), LLONG_MAX);
     res[start] = 0;
-    // first:距離、second:行き先
-    priority_queue<pair<lint, lint>, vector<pair<lint, lint>>,
-                   greater<pair<lint, lint>>>
-        pq;
+    priority_queue<P, vector<P>, greater<P>> pq;  // first:距離、second:行き先
     pq.push({0, start});
     while (!pq.empty()) {
-        lint dist = pq.top().first, now = pq.top().second;
+        long long dist = pq.top().first, now = pq.top().second;
         pq.pop();
         if (res[now] < dist) continue;
-        for (int i = 0; i < (int)g[now].size(); i++) {
-            edge e = g[now][i];
-            if (res[e.to] > res[now] + e.cost) {
-                res[e.to] = res[now] + e.cost;
-                pq.push(make_pair(res[e.to], e.to));
-            }
+        for (auto e : g[now]) {
+            if (res[e.to] <= res[now] + e.cost) continue;
+            res[e.to] = res[now] + e.cost;
+            pq.push(make_pair(res[e.to], e.to));
         }
     }
     return res;
 }
+
 int main() {
     int n, m, t;
     cin >> n >> m >> t;
