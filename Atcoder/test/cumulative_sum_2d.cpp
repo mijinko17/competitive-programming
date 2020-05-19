@@ -1,28 +1,26 @@
 #include <bits/stdc++.h>
-#define all(v) v.begin(), v.end()
-typedef long long int lint;
+typedef long long lint;
 using namespace std;
 
-// ABC-106-D
+// ARC-089-D
 
-//二次元累積和
+// 二次元累積和
 struct cumulative_sum_2d {
-    using lint = long long int;
-    int sz;
+    using lint = long long;
+    int x, y;
     vector<vector<lint>> data;
     vector<vector<lint>> sum;
-    cumulative_sum_2d(const int _sz) : sz(_sz) {
-        data.assign(sz, vector<lint>(sz));
-        sum.assign(sz + 1, vector<lint>(sz + 1));
+    cumulative_sum_2d(const int _x, const int _y) : x(_x), y(_y) {
+        data.assign(x, vector<lint>(y, 0));
+        sum.assign(x + 1, vector<lint>(y + 1, 0));
     }
-    vector<lint>& operator[](const int k) {
+    vector<lint> &operator[](const int k) {
         return data[k];
     }
     void build() {
-        for (int i = 0; i < sz; i++)
-            for (int j = 0; j < sz; j++)
-                sum[i + 1][j + 1] =
-                    sum[i + 1][j] + sum[i][j + 1] - sum[i][j] + data[i][j];
+        for (int i = 0; i < x; i++)
+            for (int j = 0; j < y; j++)
+                sum[i + 1][j + 1] = sum[i + 1][j] + sum[i][j + 1] - sum[i][j] + data[i][j];
     }
     //[a,b)×[c,d)の和を計算
     lint query(const int a, const int b, const int c, const int d) const {
@@ -30,21 +28,39 @@ struct cumulative_sum_2d {
     }
 };
 
+template <class T>
+bool chmax(T &a, const T &b) {
+    if (a < b) {
+        a = b;
+        return 1;
+    }
+    return 0;
+}
+
+int n, k;
+
 int main() {
-    int n, m, q;
-    cin >> n >> m >> q;
-    cumulative_sum_2d cum(n);
-    for (int i = 0; i < m; i++) {
-        int l, r;
-        cin >> l >> r;
-        l--, r--;
-        cum[l][r]++;
-    }
-    cum.build();
-    for (int i = 0; i < q; i++) {
+    cin >> n >> k;
+    cumulative_sum_2d black(2 * k, 2 * k);
+    for (int i = 0; i < n; i++) {
         int x, y;
-        cin >> x >> y;
-        x--, y--;
-        cout << cum.query(x, y + 1, x, y + 1) << endl;
+        char c;
+        cin >> x >> y >> c;
+        if (c == 'W') {
+            y += k;
+        }
+        x %= 2 * k, y %= 2 * k;
+        black[x][y]++;
     }
+    black.build();
+    int ans = 0;
+    for (int i = 0; i < k; i++) {
+        for (int j = 0; j < k; j++) {
+            int b_ok = black.query(0, i, 0, j) + black.query(i + k, 2 * k, 0, j) +
+                       black.query(i, i + k, j, j + k) + black.query(0, i, j + k, 2 * k) +
+                       black.query(i + k, 2 * k, j + k, 2 * k);
+            chmax(ans, max(b_ok, n - b_ok));
+        }
+    }
+    cout << ans << endl;
 }

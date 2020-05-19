@@ -2,37 +2,15 @@
 typedef long long lint;
 using namespace std;
 
-//ほげ
-//ほげ
-// aaa
+// a^n mod pを計算　O(log n)
+long long pow_mod(long long a, long long n, long long p) {
+    if (n == 0) return 1;
+    if (n & 1) return pow_mod(a, n - 1, p) * a % p;
+    long long temp = pow_mod(a, n / 2, p);
+    return temp * temp % p;
+}
+
 int main() {
-    for (int i = 0; i <= 5; i++) {
-        for (int j = 0; j <= 5; j++) {
-            for (int k = 0; k <= 5; k++) {
-                for (int l = 0; l <= 5; l++) {
-                    for (int m = 0; m <= 5; m++) {
-                        int num = 0;
-                        if (i == 0) {
-                            num++;
-                        }
-                        if (j == 0) {
-                            num++;
-                        }
-                        if (k == 0) {
-                            num++;
-                        }
-                        if (l == 0) {
-                            num++;
-                        }
-                        if (m == 0) {
-                            num++;
-                        }
-                        if (i + j + k + l + m == 5 && num == 2 && i == 0 && j == 0) {
-                            cout << i << " " << j << " " << k << " " << l << " " << m << endl;
-                        }
-                    }
-                }
-            }
-        }
-    }
+    lint mod = 1e+9 + 7;
+    cout << pow_mod(2, 0, mod) << endl;
 }

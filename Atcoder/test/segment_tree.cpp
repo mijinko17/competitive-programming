@@ -18,8 +18,7 @@ struct segment_tree {
         data.assign(n * 2, e);
     }
     // vectorで要素を指定して初期化
-    segment_tree(vector<Mnd> v, function<Mnd(Mnd, Mnd)> f, Mnd a)
-        : op(f), e(a) {
+    segment_tree(vector<Mnd> v, function<Mnd(Mnd, Mnd)> f, Mnd a) : op(f), e(a) {
         n = 1;
         while (n < (int)v.size()) n *= 2;
         data.assign(n * 2, e);
@@ -65,17 +64,18 @@ long long int gcd(long long int a, long long int b) {
 int main() {
     int n;
     cin >> n;
-    segment_tree<int> seg(n, gcd, 0);
+    segment_tree<long long int> seg(
+        n, [](lint a, lint b) { return gcd(a, b); }, 0LL);
     for (int i = 0; i < n; i++) {
         cin >> seg[i];
     }
     seg.build();
     // i:抜くやつ
-    int ans = 1;
+    lint ans = 1;
     for (int i = 0; i < n; i++) {
-        int left = seg.query(0, i);
-        int right = seg.query(i + 1, n);
-        ans = max((lint)ans, gcd(left, right));
+        lint left = seg.query(0, i);
+        lint right = seg.query(i + 1, n);
+        ans = max(ans, gcd(left, right));
     }
     cout << ans << endl;
 }

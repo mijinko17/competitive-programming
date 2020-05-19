@@ -1,10 +1,10 @@
 #include <bits/stdc++.h>
-#define all(v) (v).begin(), (v).end()
-typedef long long int lint;
+typedef long long lint;
 using namespace std;
 
+int n, k;
+
 int main() {
-    int n, k;
     cin >> n >> k;
     cout << (n - 1 + k - 2) / (k - 1) << endl;
 }

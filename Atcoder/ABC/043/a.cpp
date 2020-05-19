@@ -3,5 +3,7 @@ typedef long long lint;
 using namespace std;
 
 int main() {
-    cout << "hello" << endl;
+    int n;
+    cin >> n;
+    cout << n * (n + 1) / 2 << endl;
 }
